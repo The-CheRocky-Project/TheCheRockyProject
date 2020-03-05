@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "PoC"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1iokcs8l5r5u1"
+s3_prefix = "PoC"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+

@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  PoC-SAM
+
+  Sample SAM Template for PoC-SAM
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+# Globals:
+#   Function:
+#     Timeout: 3
+
+Resources:
+
+  jsonAppenderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: jsonAppender/src
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.7
+      Role: arn:aws:iam::693949087897:role/service-role/jsonAppenderRole
+
+  labelDetectionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: labelDetection/src
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.7
+      Role: arn:aws:iam::693949087897:role/service-role/labelDetectionLambdaRole
+
+  videoReducerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: videoReducer/src
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.7
+      Role: arn:aws:iam::693949087897:role/service-role/videoReducerRole
