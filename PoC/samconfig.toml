@@ -2,9 +2,10 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "PoC"
+stack_name = "PocTest"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1iokcs8l5r5u1"
-s3_prefix = "PoC"
+s3_prefix = "PocTest"
 region = "us-east-1"
+confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 

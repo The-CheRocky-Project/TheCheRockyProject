@@ -10,15 +10,19 @@ s3 = boto3.client('s3')
 def lambda_handler(event, context):
     # Get the object from the event and show its content type
     bucket = event['Records'][0]['s3']['bucket']['name']
-    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'],
+                                    encoding='utf-8')
     try:
-        mediaConv=boto3.client('mediaconvert', endpoint_url='https://fkuulejsc.mediaconvert.us-east-2.amazonaws.com')
-        #mediaConv.describe_endpoints(MaxResults=123, Mode='DEFAULT')
-        result=mediaConv.create_job(
-            JobTemplate = 'videoFramer',
-            Role= 'arn:aws:iam::693949087897:role/lambdaFramer',
-            Queue= 'arn:aws:mediaconvert:us-east-2:693949087897:queues/Default',
-            Settings= {
+        mediaConv = boto3.client(
+            'mediaconvert',
+            endpoint_url='https://' /
+            'fkuulejsc.mediaconvert.us-east-2.amazonaws.com')
+        # mediaConv.describe_endpoints(MaxResults=123, Mode='DEFAULT')
+        result = mediaConv.create_job(
+            JobTemplate='videoFramer',
+            Role='arn:aws:iam::693949087897:role/lambdaFramer',
+            Queue='arn:aws:mediaconvert:us-east-2:693949087897:queues/Default',
+            Settings={
                 'Inputs': [
                     {
                         'AudioSelectors': {
@@ -58,23 +62,24 @@ def lambda_handler(event, context):
                             }
                         ],
                         'OutputGroupSettings': {
-                        'Type': 'FILE_GROUP_SETTINGS',
-                        'FileGroupSettings': {
-                            'Destination': 's3://'+ bucket +'/outConvert/'
+                            'Type': 'FILE_GROUP_SETTINGS',
+                            'FileGroupSettings': {
+                                'Destination': 's3://' + bucket +
+                                '/outConvert/'
                             }
                         }
                     }
                 ],
                 'AdAvailOffset': 0,
             },
-            AccelerationSettings= {
+            AccelerationSettings={
                 'Mode': 'DISABLED'
             },
-            StatusUpdateInterval= 'SECONDS_60',
-            Priority= 0
+            StatusUpdateInterval='SECONDS_60',
+            Priority=0
         )
         return(result['Job']['Id'])
     except Exception as e:
         print(e)
-        print('Error getting object {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(key, bucket))
+        print('Error getting object {} from bucket {}'.format(key, bucket))
         raise e

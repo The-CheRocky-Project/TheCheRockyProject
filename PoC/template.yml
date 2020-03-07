@@ -1,37 +1,65 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
-Description: >
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
   PoC-SAM
-
-  Sample SAM Template for PoC-SAM
-
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-# Globals:
-#   Function:
-#     Timeout: 3
-
+  SAM Template to build the lambdas for Autonomous HighLights Platform PoC
 Resources:
-
-  jsonAppenderFunction:
-    Type: AWS::Serverless::Function
+  labelDetection:
+    Type: 'AWS::Lambda::Function'
     Properties:
-      CodeUri: jsonAppender/src
-      Handler: lambda_function.lambda_handler
-      Runtime: python3.7
-      Role: arn:aws:iam::693949087897:role/service-role/jsonAppenderRole
-
-  labelDetectionFunction:
-    Type: AWS::Serverless::Function
-    Properties:
+      Handler: labelDetection.lambda_handler
       CodeUri: labelDetection/src
-      Handler: lambda_function.lambda_handler
+      Role: 'arn:aws:iam::693949087897:role/service-role/labelDetectionLambdaRole'
       Runtime: python3.7
-      Role: arn:aws:iam::693949087897:role/service-role/labelDetectionLambdaRole
-
-  videoReducerFunction:
-    Type: AWS::Serverless::Function
+  jsonAppender:
+    Type: 'AWS::Lambda::Function'
     Properties:
-      CodeUri: videoReducer/src
-      Handler: lambda_function.lambda_handler
+      Handler: jsonAppender.lambda_handler
+      CodeUri: jsonAppender/src
+      Role: 'arn:aws:iam::693949087897:role/service-role/jsonAppenderRole'
       Runtime: python3.7
-      Role: arn:aws:iam::693949087897:role/service-role/videoReducerRole
+  videoReducer:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: videoReducer.lambda_handler
+      CodeUri: videoReducer/src
+      Role: 'arn:aws:iam::693949087897:role/service-role/videoReducerRole'
+      Runtime: python3.7
+  ahlvideos:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:Put'
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: vidoes
+                  - Name: suffix
+                    Value: .mp4
+            Function: >-
+              videoReducer
+          - Event: 's3:ObjectCreated:Put'
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: outConvert
+                  - Name: suffix
+                    Value: .jpg
+            Function: >-
+              labelDetection
+          - Event: 's3:ObjectCreated:Put'
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: outConvert
+                  - Name: suffix
+                    Value: .json
+            Function: >-
+              jsonAppender
+    DependsOn:
+      - videoReducer
+      - jsonAppender
+      - labelDetection
