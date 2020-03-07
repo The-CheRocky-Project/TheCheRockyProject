@@ -4,21 +4,21 @@ Description: |
   SAM Template to build the lambdas for Autonomous HighLights Platform PoC
 Resources:
   labelDetection:
-    Type: 'AWS::Lambda::Function'
+    Type: 'AWS::Serverless::Function'
     Properties:
       Handler: labelDetection.lambda_handler
       CodeUri: labelDetection/src
       Role: 'arn:aws:iam::693949087897:role/service-role/labelDetectionLambdaRole'
       Runtime: python3.7
   jsonAppender:
-    Type: 'AWS::Lambda::Function'
+    Type: 'AWS::Serverless::Function'
     Properties:
       Handler: jsonAppender.lambda_handler
       CodeUri: jsonAppender/src
       Role: 'arn:aws:iam::693949087897:role/service-role/jsonAppenderRole'
       Runtime: python3.7
   videoReducer:
-    Type: 'AWS::Lambda::Function'
+    Type: 'AWS::Serverless::Function'
     Properties:
       Handler: videoReducer.lambda_handler
       CodeUri: videoReducer/src
